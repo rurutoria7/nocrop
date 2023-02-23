@@ -1,0 +1,7 @@
+{
+  "sub-directory": "nocrop",
+  "result_width_height_ratio": 1,
+  "bg_color": [245, 245, 245],
+  "padding_x": 0.05,
+  "padding_y": 0.05
+}

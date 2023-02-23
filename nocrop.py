@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 from PIL import Image, ImageDraw
+import json
 
 
 def no_crop(img_path: Path, res_path: Path, final_rat: float, bg_color: tuple[int], padx: float = 0, pady: float = 0):
@@ -29,15 +30,26 @@ def no_crop(img_path: Path, res_path: Path, final_rat: float, bg_color: tuple[in
 
 
 if __name__ == '__main__':
+    try:
+        with open(Path(__file__).parents[0]/'config.json', 'r') as jfile:
+            config = json.load(jfile)
+    except:
+        with open(Path(__file__).parents[1]/'config.json', 'r') as jfile:
+            config = json.load(jfile)
 
     for file in sys.stdin.readlines():
         img = Path(file.strip())
         if img.is_file():
-            nocrop = img.parents[0] / 'nocrop'
-            nocrop.mkdir(exist_ok = True)
-            nocroped = nocrop / img.name
+            result_dir = img.parents[0] / config['sub-directory']
+            result_dir.mkdir(exist_ok = True)
+            result_path = result_dir / f'nocrop-{img.name}'
             try:
-                no_crop(img, nocroped, 1, (245, 245, 245), 0.05, 0.05)
+                no_crop(img,
+                        result_path,
+                        config['result_width_height_ratio'],
+                        tuple(config['bg_color']),
+                        config['padding_x'],
+                        config['padding_y'])
                 print(f'{img.name} is processed.')
             except Image.UnidentifiedImageError:
                 print(f'{img.name} is not an image.')
